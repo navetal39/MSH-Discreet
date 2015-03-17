@@ -27,8 +27,11 @@ def do_turn(game):
             leader2 = pir
 
     #Target selection:
-    target1 = closest_island(game, leader1, fleet1, 'neutralize')
-    target2 = closest_island(game, leader2, fleet2, 'capture')
+    target1 = closest_island(game, leader1, fleet1, 'capture')
+    target2 = closest_island(game, leader2, fleet2, 'neutralize')
+
+    if target1 = target2:
+        pass # To do: Prevent the 2 fleets from targeting the same island!
 
     #Seting sail...etion?
     for pir in fleet1:
