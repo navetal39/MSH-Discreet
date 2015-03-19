@@ -1,0 +1,6 @@
+C:\Users\Sa'ar\Desktop\starter_kit1\bots\csharp\Bot\Bot\bin\Debug\Bot.dll
+C:\Users\Sa'ar\Desktop\starter_kit1\bots\csharp\Bot\Bot\bin\Debug\Bot.pdb
+C:\Users\Sa'ar\Desktop\starter_kit1\bots\csharp\Bot\Bot\bin\Debug\IPirateGame.dll
+C:\Users\Sa'ar\Desktop\starter_kit1\bots\csharp\Bot\Bot\obj\Debug\Bot.csprojResolveAssemblyReference.cache
+C:\Users\Sa'ar\Desktop\starter_kit1\bots\csharp\Bot\Bot\obj\Debug\Bot.dll
+C:\Users\Sa'ar\Desktop\starter_kit1\bots\csharp\Bot\Bot\obj\Debug\Bot.pdb
