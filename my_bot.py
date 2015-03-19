@@ -1,4 +1,7 @@
 def do_turn(game):
+    '''
+    this is fucking awsome
+    '''
     from bot_utils import *
     global fleet1_target
     global fleet2_target
