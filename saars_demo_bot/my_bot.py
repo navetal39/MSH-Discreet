@@ -1,5 +1,7 @@
 def do_turn(game):
     from classes import *
+    if len(game.my_pirates()) == 0:
+        return
     if game.get_turn() == 1:
         game.debug("Setting lists")
         global my_pirates
@@ -44,7 +46,6 @@ def do_turn(game):
                 pirate.set_target(game, None)
             for island in world_islands:
                 if (island.island.owner != game.ME or island.island.team_capturing != game.ME) and pirate.target is None:
-                    game.debug("Attempting to assign pirate {} to island {}".format(pirate.pirate.id, island.island.id))
                     pirate.set_target(game, island)
     
     game.debug("Setting sails")
