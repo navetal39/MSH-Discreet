@@ -49,5 +49,48 @@ def do_turn(game):
                     pirate.set_target(game, island)
     
     game.debug("Setting sails")
+    calls_for_help = {}
+    idle_pirates = []
     for pirate in my_pirates:
-        pirate.move_towards_target(game, enemy_pirates)
+        has_mission, new_location, help_ammount = pirate.move_towards_target(game, enemy_pirates)
+        if not has_mission:
+            game.debug(has_mission)
+            idle_pirates.append(pirate)
+        if help_ammount:
+            calls_for_help[new_location] = help_ammount
+    
+    calls = sort_calls(calls_for_help)
+    game.debug("giving missions to idle pirates")
+    for mission in calls:
+        help_ammount = calls_for_help[mission]
+        if len(idle_pirates) >= help_ammount: # Enough pirates for the mission
+            pirates_by_distance = get_pirates_for_mission(game, idle_pirates, mission)
+            for i in xrange(help_ammount):
+                pirates_by_distance[i].go_help(game, mission)
+                idle_pirates.remove(pirates_by_distance[i])
+        else: # No more piraets for this and any of the following missions
+            break
+
+def sort_calls(calls_dict):
+    # Not efficient, but for such low numbers I don't care...
+    sorted_list = []
+    for i in xrange(5):
+        for call in calls_dict.keys():
+            if calls_dict[call] == i:
+                sorted_list.append(call)
+    return sorted_list
+
+def get_pirates_for_mission(game, pirates, mission):
+    pirates_and_distances = [(pirate, game.distance(pirate.pirate, mission)) for pirate in pirates]
+    sorted_list = []
+    while len(pirates_and_distances) > 0:
+        min_dis = 256
+        min_pir = None
+        for pnd in pirates_and_distances:
+            if pnd[1] <= min_dis:
+                min_dis = pnd[1]
+                min_pir = pnd[0]
+        if not min_pir is None:
+            sorted_list.append(min_pir)
+            pirates_and_distances.remove((min_pir, min_dis))
+    return sorted_list
