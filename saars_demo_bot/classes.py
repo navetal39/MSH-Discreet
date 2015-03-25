@@ -8,11 +8,6 @@ class World_Island(object):
         
     def update_data(self, game):
         self.island = game.get_island(self.island.id)
-        if self.target is None:
-            target = None
-        else:
-            target = self.target.pirate.id
-        game.debug("Island {}, targeted by pirate {}".format(self.island.id, target))
 
         
 class My_Pirate(object):
@@ -20,6 +15,7 @@ class My_Pirate(object):
         self.pirate = pirate
         self.power = self.calculate_power(game)
         self.target = None
+        self.is_occupied = False
         
     def is_capturing(self, game):
         return game.is_capturing(self.pirate)
@@ -31,7 +27,7 @@ class My_Pirate(object):
             self.set_target(game, None)
 
     def set_target(self, game, target):
-        if target is None: # Ship is lost - Release island
+        if target is None: # Ship is lost - Release target
             if not self.target is None: 
                 self.target.target = None # Release the target
             self.target = target
@@ -53,7 +49,15 @@ class My_Pirate(object):
     
     def move_towards_target(self, game, enemy_pirates):
         if not self.pirate.is_lost:
-            game.set_sail(self.pirate, self.get_direction(game, enemy_pirates))
+            direction = self.get_direction(game, enemy_pirates)
+            if self.is_occupied:
+                if self.pirate.is_cloaked:
+                    game.reveal(self.pirate)
+                else:
+                    game.set_sail(self.pirate, direction)
+                return True
+            else:
+                return False
         
     def get_direction(self, game, enemy_pirates):
         close_enemies = []
@@ -66,7 +70,15 @@ class My_Pirate(object):
             directions = game.get_directions(self.pirate, pivot)
             return self.reverse_direction(directions[-1])
         if not self.target is None:
-            return game.get_directions(self.pirate, self.target.island)[0]
+            if type(self.target) is World_Island:
+                return game.get_directions(self.pirate, self.target.island)[0]
+                self.is_occupied = True
+            elif type(self.target) is  Enemy_Pirate:
+                return game.get_directions(self.pirate, self.target.pirate)[0]
+                self.is_occupied = True
+            else:
+                game.debug("Target of unknown type" + type(self.target))
+        self.is_occupied = False
         return '-'
     
     def get_pivot(self, game, pirates):
@@ -98,6 +110,7 @@ class Enemy_Pirate(object):
     def __init__(self, game, pirate):
         self.pirate = pirate
         self.power = self.calculate_power(game)
+        self.target = None
         
     def is_capturing(self, game):
         return game.is_capturing(self.pirate)

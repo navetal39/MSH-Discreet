@@ -1,5 +1,6 @@
 def do_turn(game):
     from classes import *
+    from time import sleep
     if len(game.my_pirates()) == 0:
         return
     if game.get_turn() == 1:
@@ -39,15 +40,44 @@ def do_turn(game):
             game.debug("^island")
         game.debug("world_islands list updated")
 
-    game.debug("Assigning pirates to islands")
+    idle = []
+    game.debug("Assigning pirates to targets")
     for pirate in my_pirates:
-        if not pirate.pirate.is_lost:
-            if not pirate.target is None and pirate.target.island.owner == game.ME:
+        if pirate.pirate.id > 0 and not pirate.pirate.is_lost and not pirate.pirate.is_cloaked:
+            if type(pirate.target) is World_Island and pirate.target.island.owner == game.ME:
                 pirate.set_target(game, None)
             for island in world_islands:
                 if (island.island.owner != game.ME or island.island.team_capturing != game.ME) and pirate.target is None:
                     pirate.set_target(game, island)
-    
+        elif pirate.pirate.id == 0: # Suecide bomber
+            if not pirate.pirate.is_cloaked: # Not ready
+                game.cloak(pirate.pirate)
+            else: # Ready
+                available_enemies = []
+                for enemy in enemy_pirates:
+                    if not enemy.pirate.is_lost:
+                        available_enemies.append((enemy, game.distance(pirate.pirate, enemy.pirate)))
+                if len(available_enemies): # There are enemies on the field
+                    mini = available_enemies[0]; available_enemies.remove(mini)
+                    for enemy in available_enemies:
+                        if enemy[1] < mini[1]:
+                            mini = enemy
+                    pirate.set_target(game, mini[0])
+                else: # There are no enemies on the field
+                    idle.append(pirate)
+                    
+
+
+                        
     game.debug("Setting sails")
     for pirate in my_pirates:
-        pirate.move_towards_target(game, enemy_pirates)
+        moved = pirate.move_towards_target(game, enemy_pirates)
+        if not moved:
+            idle.append(pirate)
+
+    if game.get_turn() == 5:
+        sleep(2)
+    game.debug("Assigning idle pirates to targets")
+    for pirate in idle:
+        if not pirate.pirate.is_lost:
+            game.debug("pirate {} is idle for this turn".format(pirate.pirate.id))
