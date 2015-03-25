@@ -67,7 +67,7 @@ class My_Pirate(object):
             return self.reverse_direction(directions[-1])
         if not self.target is None:
             return game.get_directions(self.pirate, self.target.island)[game.get_turn()%2-1]
-        return '-'
+        return '-' # Default value
     
     def get_pivot(self, game, pirates):
         total_weight = 0

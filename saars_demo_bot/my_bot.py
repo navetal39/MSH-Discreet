@@ -50,4 +50,7 @@ def do_turn(game):
     
     game.debug("Setting sails")
     for pirate in my_pirates:
-        pirate.move_towards_target(game, enemy_pirates)
+        if not pirate.target is None:
+            pirate.move_towards_target(game, enemy_pirates)
+        else:
+            game.debug("Pirate {} is free".format(pirate.pirate.id))
