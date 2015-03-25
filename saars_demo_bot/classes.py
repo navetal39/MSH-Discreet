@@ -51,10 +51,7 @@ class My_Pirate(object):
         if not self.pirate.is_lost:
             direction = self.get_direction(game, enemy_pirates)
             if self.is_occupied:
-                if self.pirate.is_cloaked:
-                    game.reveal(self.pirate)
-                else:
-                    game.set_sail(self.pirate, direction)
+                game.set_sail(self.pirate, direction)
                 return True
             else:
                 return False
@@ -71,11 +68,11 @@ class My_Pirate(object):
             return self.reverse_direction(directions[-1])
         if not self.target is None:
             if type(self.target) is World_Island:
+                self.is_occupied = True
                 return game.get_directions(self.pirate, self.target.island)[0]
+            elif type(self.target) is Enemy_Pirate:
                 self.is_occupied = True
-            elif type(self.target) is  Enemy_Pirate:
                 return game.get_directions(self.pirate, self.target.pirate)[0]
-                self.is_occupied = True
             else:
                 game.debug("Target of unknown type" + type(self.target))
         self.is_occupied = False
