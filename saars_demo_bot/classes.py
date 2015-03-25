@@ -4,15 +4,12 @@ EVASION_DISTANCE= 6
 class World_Island(object):
     def __init__(self, island):
         self.island = island
-        self.target = None
+        self.targets = []
         
     def update_data(self, game):
         self.island = game.get_island(self.island.id)
-        if self.target is None:
-            target = None
-        else:
-            target = self.target.pirate.id
-        game.debug("Island {}, targeted by pirate {}".format(self.island.id, target))
+        target = [pirate.pirate.id for pirate in self.targets]
+        game.debug("Island {}, targeted by pirates: {}".format(self.island.id, target))
 
         
 class My_Pirate(object):
@@ -30,16 +27,16 @@ class My_Pirate(object):
         if (self.pirate.is_lost):
             self.set_target(game, None)
 
-    def set_target(self, game, target):
+    def set_target(self, game, target, force = False):
         if target is None: # Ship is lost - Release island
             if not self.target is None: 
-                self.target.target = None # Release the target
+                self.target.targets.remove(self) # Release the target
             self.target = target
-        elif target.target is None: # Target exists and doesn't have a target yet
+        elif target.targets == [] or force: # Target exists and doesn't have a target yet
             if not self.target is None:
-                self.target.target = None # Release current target
+                self.target.targets.remove(self) # Release current target
             self.target = target
-            self.target.target = self
+            self.target.targets.append(self)
             
     def calculate_power(self, game):
         power = 0

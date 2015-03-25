@@ -47,10 +47,14 @@ def do_turn(game):
             for island in world_islands:
                 if (island.island.owner != game.ME or island.island.team_capturing != game.ME) and pirate.target is None:
                     pirate.set_target(game, island)
+            if pirate.target is None:
+                pirate.set_target(game, world_islands[pirate.pirate.id%len(world_islands)], force = True)
     
     game.debug("Setting sails")
+    idle = []
     for pirate in my_pirates:
         if not pirate.target is None:
             pirate.move_towards_target(game, enemy_pirates)
         else:
-            game.debug("Pirate {} is free".format(pirate.pirate.id))
+            idle.append(pirate)
+    game.debug("free pirates: {}".format([pirate.pirate.id for pirate in idle]))
