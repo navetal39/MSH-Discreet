@@ -61,9 +61,26 @@ class My_Pirate(object):
         if len(close_enemies): # If there's danger
             pivot = self.get_pivot(game, close_enemies) # Get "Escape route"
             directions = game.get_directions(self.pirate, pivot)
-            return self.reverse_direction(directions[-1])
+            direction = self.reverse_direction(directions[game.get_turn()%2-1])
+            turn_count = 0
+            while not game.is_passable(game.destination(self.pirate, direction)):
+                if turn_count == 2: # Prevent ship from running into the enemies
+                    continue
+                direction = self.turn_direction(direction)
+                turn_count += 1
+                if turn_count == 4: # Prevent never-ending loop
+                    break
+            return direction
         if not self.target is None:
-            return game.get_directions(self.pirate, self.target.island)[game.get_turn()%2-1]
+            directions = game.get_directions(self.pirate, self.target.island)
+            direction = directions[game.get_turn()%2-1]
+            turn_count = 0
+            while not game.is_passable(game.destination(self.pirate, direction)):
+                direction = self.turn_direction(direction)
+                turn_count += 1
+                if turn_count == 4: # Prevent never-ending loop
+                    break
+            return direction
         return '-' # Default value
     
     def get_pivot(self, game, pirates):
@@ -89,7 +106,13 @@ class My_Pirate(object):
         except Exception, e:
             game.debug('An error occured: '+e)
             return '-' # Default value
-
+    def turn_direction(self, direction):
+        changes = {'n':'w', 's':'e', 'e':'n', 'w':'s', '-':'-'}
+        try:
+            return changes[direction]
+        except Exception, e:
+            game.debug('An error occured: '+e)
+            return '-' # Default value
     
 class Enemy_Pirate(object):
     def __init__(self, game, pirate):
